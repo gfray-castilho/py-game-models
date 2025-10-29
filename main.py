@@ -9,21 +9,21 @@ def main() -> None:
 
     for nickname, dados in dados_json.items():
         race, _ = Race.objects.get_or_create(
-            name=dados["race"]["name"],
-            defaults={"description": dados["race"]["description"]},
+            name=dados["race"].get("name"),
+            defaults={"description": dados["race"].get("description")},
         )
 
-        for skill_data in dados["race"]["skills"]:
+        for skill_data in dados["race"].get("skills"):
             Skill.objects.get_or_create(
-                name=skill_data["name"],
-                bonus=skill_data["bonus"],
+                name=skill_data.get("name"),
+                bonus=skill_data.get("bonus"),
                 race=race,
             )
 
-        if dados["guild"]:
-            desc = dados["guild"]["description"]
+        if dados.get("guild"):
+            desc = dados["guild"].get("description")
             guild, _ = Guild.objects.get_or_create(
-                name=dados["guild"]["name"],
+                name=dados["guild"].get("name"),
                 defaults={"description": desc},
             )
         else:
@@ -31,8 +31,8 @@ def main() -> None:
 
         Player.objects.create(
             nickname=nickname,
-            email=dados["email"],
-            bio=dados["bio"],
+            email=dados.get("email"),
+            bio=dados.get("bio"),
             race=race,
             guild=guild,
         )
