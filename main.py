@@ -8,22 +8,28 @@ def main() -> None:
         dados_json = json.load(file)
 
     for nickname, dados in dados_json.items():
-        race, _ = Race.objects.get_or_create(
-            name=dados["race"].get("name"),
-            defaults={"description": dados["race"].get("description")},
-        )
+        race_data = dados.get("race")
 
-        for skill_data in dados["race"].get("skills"):
-            Skill.objects.get_or_create(
-                name=skill_data.get("name"),
-                bonus=skill_data.get("bonus"),
-                race=race,
+        if race_data:
+            race, _ = Race.objects.get_or_create(
+                name=race_data.get("name"),
+                defaults={"description": race_data.get("description")},
             )
 
-        if dados.get("guild"):
-            desc = dados["guild"].get("description")
+            for skill_data in race_data.get("skills", []):
+                Skill.objects.get_or_create(
+                    name=skill_data.get("name"),
+                    bonus=skill_data.get("bonus"),
+                    race=race,
+                )
+        else:
+            race = None
+
+        guild_data = dados.get("guild")
+        if guild_data:
+            desc = guild_data.get("description")
             guild, _ = Guild.objects.get_or_create(
-                name=dados["guild"].get("name"),
+                name=guild_data.get("name"),
                 defaults={"description": desc},
             )
         else:
